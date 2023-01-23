@@ -1,5 +1,6 @@
 package game2048;
 
+import java.sql.Array;
 import java.util.Formatter;
 import java.util.Observable;
 
@@ -113,12 +114,67 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+        int size = this.board.size();
+        boolean columnChanged;
+        for (int c = 0; c < size; c++) {
+            // get values of one column of the board
+            columnArray = getOneColumnValues(this.board, c);
+            for (int i = 1; i < size; i++) {
+                for (int j = 0; j < i; j++) {
+                    columnChanged = tiltOneColumn(columnArray, i, j, c, this.board);
+                    if (columnChanged){
+                        changed = true;
+                        score += 2;
+                        break;
+                    }
+                }
+            }
+        }
+
 
         checkGameOver();
         if (changed) {
             setChanged();
         }
         return changed;
+    }
+
+
+    public int[] columnArray = new int[4];
+   
+    /** Helper method one
+     * get one column of the board per column at first time
+    * */
+    public int[] getOneColumnValues(Board b, int columnIndex) {
+        // use one array to store the values of one column
+        int[] oneColumnOfBoard = new int[b.size()];
+        for (int r = 0; r < b.size(); r++) {
+            if (b.tile(columnIndex, r) == null) {
+                oneColumnOfBoard[3 - r] = 0;
+                continue;
+            }
+            oneColumnOfBoard[3 - r] = b.tile(columnIndex, r).value();
+        }
+       return oneColumnOfBoard; 
+    }
+
+    /** Helper method two
+     * split the action "tilt one column" into multiple atom actions
+     * 
+     * */
+    public boolean tiltOneColumn(int[] oneColumn, int rowIndexCurrent, int rowIndexCompare, int columnIndex, Board b) {
+        int rowIndexOnBoard = 3 - rowIndexCurrent;
+        Tile currentTile = board.tile(columnIndex, rowIndexOnBoard);
+        if (currentTile == null) {
+            return false;
+        }
+        if (oneColumn[rowIndexCompare] == 0) {
+            b.move(columnIndex, 3 - rowIndexCompare, currentTile);
+            columnArray[rowIndexCompare] = columnArray[rowIndexCurrent];
+            columnArray[rowIndexCurrent] = 0;
+            return true;
+        }
+        return false;
     }
 
     /** Checks if the game is over and sets the gameOver variable
