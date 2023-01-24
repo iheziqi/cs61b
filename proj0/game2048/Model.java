@@ -1,6 +1,5 @@
 package game2048;
 
-import java.sql.Array;
 import java.util.Formatter;
 import java.util.Observable;
 
@@ -114,22 +113,41 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+
+        // first consider which keystroke direction
+        if (side.toString() == "NORTH") {
+            this.board.setViewingPerspective(Side.NORTH);
+        } else if (side.toString() == "SOUTH") {
+            this.board.setViewingPerspective(Side.SOUTH);
+        } else if (side.toString() == "WEST") {
+            this.board.setViewingPerspective(Side.WEST);
+        } else {
+            this.board.setViewingPerspective(Side.EAST);
+        }
+
         int size = this.board.size();
         boolean columnChanged;
         for (int c = 0; c < size; c++) {
             // get values of one column of the board
             columnArray = getOneColumnValues(this.board, c);
+            // before the check, set the merge status to default
+            setMergeStatusDefault();
+            // before the check, set the score of every column to 0
+            scoreOfCurrentColumn = 0;
             for (int i = 1; i < size; i++) {
                 for (int j = 0; j < i; j++) {
-                    columnChanged = tiltOneColumn(columnArray, i, j, c, this.board);
+                    columnChanged = tiltOneColumn(i, j, c, this.board);
                     if (columnChanged){
                         changed = true;
-                        score += 2;
+                        score += scoreOfCurrentColumn;
+                        scoreOfCurrentColumn = 0;
                         break;
                     }
                 }
             }
         }
+        // change the direction back to north
+        this.board.setViewingPerspective(Side.NORTH);
 
 
         checkGameOver();
@@ -140,12 +158,22 @@ public class Model extends Observable {
     }
 
 
-    public int[] columnArray = new int[4];
-   
+    public static int[] columnArray = new int[4];
+
+    public static boolean[] mergeStatusTrack = {false, false, false, false};
+
+    public static int scoreOfCurrentColumn = 0;
+
+    public static void setMergeStatusDefault () {
+        for (int i = 0; i < mergeStatusTrack.length; i++) {
+            mergeStatusTrack[i] = false;
+        }
+    }
+
     /** Helper method one
      * get one column of the board per column at first time
     * */
-    public int[] getOneColumnValues(Board b, int columnIndex) {
+    public static int[] getOneColumnValues(Board b, int columnIndex) {
         // use one array to store the values of one column
         int[] oneColumnOfBoard = new int[b.size()];
         for (int r = 0; r < b.size(); r++) {
@@ -162,18 +190,32 @@ public class Model extends Observable {
      * split the action "tilt one column" into multiple atom actions
      * 
      * */
-    public boolean tiltOneColumn(int[] oneColumn, int rowIndexCurrent, int rowIndexCompare, int columnIndex, Board b) {
+    public static boolean tiltOneColumn(int rowIndexCurrent, int rowIndexCompare, int columnIndex, Board b) {
         int rowIndexOnBoard = 3 - rowIndexCurrent;
-        Tile currentTile = board.tile(columnIndex, rowIndexOnBoard);
+        int rowIndexOnBoardCompared = 3 - rowIndexCompare;
+        Tile currentTile = b.tile(columnIndex, rowIndexOnBoard);
+        Tile comparedTile = b.tile(columnIndex, rowIndexOnBoardCompared);
+
         if (currentTile == null) {
             return false;
         }
-        if (oneColumn[rowIndexCompare] == 0) {
-            b.move(columnIndex, 3 - rowIndexCompare, currentTile);
+
+        if (columnArray[rowIndexCompare] == columnArray[rowIndexCurrent] && mergeStatusTrack[rowIndexCompare] == false) {
+            b.move(columnIndex, rowIndexOnBoardCompared, currentTile);
+            columnArray[rowIndexCompare] = columnArray[rowIndexCurrent] * 2;
+            columnArray[rowIndexCurrent] = 0;
+            scoreOfCurrentColumn = columnArray[rowIndexCompare];
+            mergeStatusTrack[rowIndexCompare] = true;
+            return true;
+        }
+
+        if (comparedTile == null) {
+            b.move(columnIndex, rowIndexOnBoardCompared, currentTile);
             columnArray[rowIndexCompare] = columnArray[rowIndexCurrent];
             columnArray[rowIndexCurrent] = 0;
             return true;
         }
+
         return false;
     }
 
