@@ -1,5 +1,6 @@
 package deque;
 
+import java.util.Iterator;
 
 public class LinkedListDeque <T> {
     private class Node {
@@ -44,6 +45,9 @@ public class LinkedListDeque <T> {
      * @Params T item
      * */
     public void addLast(T item) {
+        sentinel.prev.next = new Node(item, sentinel.prev, sentinel);
+        sentinel.prev = sentinel.prev.next;
+        size += 1;
     }
 
     /**
@@ -51,7 +55,7 @@ public class LinkedListDeque <T> {
      * @return boolean
      * */
     public boolean isEmpty() {
-        if (sentinel.next == sentinel.prev) {
+        if (size == 0) {
             return true;
         }
         return false;
@@ -87,7 +91,14 @@ public class LinkedListDeque <T> {
      * @return T
      * */
     public T removeFirst() {
-        return null;
+        if (isEmpty()) {
+            return null;
+        }
+        T firstItem = sentinel.next.item;
+        sentinel.next.next.prev = sentinel;
+        sentinel.next = sentinel.next.next;
+        size -= 1;
+        return firstItem;
     }
 
     /**
@@ -96,7 +107,14 @@ public class LinkedListDeque <T> {
      * @return T
      * */
     public T removeLast() {
-       return null;
+        if(isEmpty()) {
+            return null;
+        }
+        T lastItem = sentinel.prev.item;
+        sentinel.prev.prev.next = sentinel;
+        sentinel.prev = sentinel.prev.prev;
+        size -= 1;
+        return lastItem;
     }
 
     /**
@@ -105,15 +123,78 @@ public class LinkedListDeque <T> {
      * @return T or null
      * */
     public T get(int index) {
-        return null;
+        if (isEmpty()) {
+            return null;
+        }
+
+        if (index > size - 1) {
+            return null;
+        }
+
+        Node p = sentinel.next;
+        for (int i = 0; i < index; i++) {
+            p = p.next;
+        }
+        return p.item;
+    }
+
+    /**
+     * Using recursive to get the item at the given index, where 0 is the front, 1 is the next item and so forth.
+     * If no such item exists, returns null.
+     * @return T or null
+     * */
+    public  T getRecursive(int index) {
+        if (isEmpty()) {
+            return null;
+        }
+
+        if (index > size - 1) {
+            return null;
+        }
+
+        return getRecursiveHelper(sentinel.next, index);
+    }
+
+    /**
+     * Helper method for getRecursive(int index)
+     * */
+    private T getRecursiveHelper(Node node, int index) {
+        if (index == 0) {
+            return node.item;
+        }
+        return getRecursiveHelper(node.next, index - 1);
     }
 
     /**
      * Returns an iterator
-     * @return T
+     * @return Iterator<T>
      * */
-    public Iterable<T> iterator() {
-        return null;
+    public Iterator<T> iterator() {
+        return  new dequeSetIterator();
+    }
+
+    /**
+     * Sets the deque iterator.
+     * It checks the existence of next item in list and return this item (if exists).
+     * @return T item (if exists)
+     * */
+    private class dequeSetIterator implements Iterator<T> {
+        private int wizPos;
+        private Node p;
+        public dequeSetIterator() {
+            wizPos = 0;
+            p = sentinel;
+        }
+        public boolean hasNext() {
+            return wizPos < size;
+        }
+
+        public T next() {
+            p = p.next;
+            T returnItem = p.item;
+            wizPos += 1;
+            return returnItem;
+        }
     }
 
     /**
@@ -123,19 +204,25 @@ public class LinkedListDeque <T> {
      * @return boolean
      * */
     public boolean equals(Object o) {
-        return false;
-    }
+        if (!(o instanceof LinkedListDeque)) {
+            return false;
+        }
 
-    public static void main(String[] args) {
-        LinkedListDeque<Integer> deque = new LinkedListDeque<Integer>();
-        deque.printDeque();
-        deque.addFirst(99);
-        deque.addFirst(98);
-        deque.addFirst(97);
-        deque.addFirst(96);
-        deque.addFirst(95);
-        deque.addFirst(94);
-        deque.addFirst(93);
-        deque.printDeque();
+        int oSize = ((LinkedListDeque<?>) o).size;
+        if (oSize != size) {
+            return false;
+        }
+
+        Node p = sentinel;
+        Node op = (Node) ((LinkedListDeque<?>) o).sentinel;
+        for (int i = 0; i < size; i++) {
+           p = p.next;
+           op = op.next;
+           if (p.item != op.item) {
+               return false;
+           }
+        }
+
+        return true;
     }
 }
