@@ -7,7 +7,7 @@ public class ArrayDeque <T> {
     private T[] items;
 
     /**
-     * Constructor of ArrayDeque
+     * Constructor of ArrayDeque.
      * */
     public ArrayDeque() {
         size = 0;
@@ -17,7 +17,7 @@ public class ArrayDeque <T> {
     }
 
     /**
-     * Checks whether the given position in items is empty
+     * Checks whether the given position in items is empty.
      * @param position: an integer of position
      * */
     private  boolean checkNullInArray(int position) {
@@ -28,14 +28,14 @@ public class ArrayDeque <T> {
     }
 
     /**
-     * Returns the length of array
+     * Returns the length of array.
      * */
-    private int getLength() {
+    public int getLength() {
         return items.length;
     }
 
     /**
-     * Changes nextFirst index
+     * Changes nextFirst index.
      * */
     private void setNextFirst() {
         nextFirst --;
@@ -45,7 +45,7 @@ public class ArrayDeque <T> {
     }
 
     /**
-     * Changes nextLast index
+     * Changes nextLast index.
      * */
     private void setNextLast() {
         nextLast ++;
@@ -54,6 +54,10 @@ public class ArrayDeque <T> {
         }
     }
 
+    /**
+     * Gets the index of the first element in list.
+     * @return the integer index of current first element
+     * */
     private int getFirstIndex() {
         int currentFirst = nextFirst + 1;
         if (currentFirst > items.length - 1) {
@@ -62,6 +66,10 @@ public class ArrayDeque <T> {
         return currentFirst;
     }
 
+    /**
+     * Gets the index of the last element in list.
+     * @return the integer index of current last element
+     * */
     private int getLastIndex() {
         int currentLast = nextLast - 1;
         if (currentLast < 0) {
@@ -70,18 +78,26 @@ public class ArrayDeque <T> {
         return currentLast;
     }
 
-    private int getNewNextFirst(int first) {
-        if (first + 1 > items.length - 1) {
+    /***
+     * Gets the next index in the loop through list.
+     * Because array list is circular, when loop through this list, the next index will
+     * sometimes be out of bound of array. This method checks this problem and get the right index.
+     * @param index
+     * @return the next index integer
+     */
+    private int getNewNextFirst(int index) {
+        if (index + 1 > items.length - 1) {
             return 0;
         }
-        return first + 1;
+        return index + 1;
     }
 
     /**
-     * Resizes the size of array proportional to the number of items
+     * Resizes the size of array proportional to the number of items.
+     * This method resizes array to bigger array.
      * */
     private void resize() {
-        T[] newItemsArray = (T []) new Object[getLength() * 2];
+        T[] newItemsArray = (T []) new Object[items.length * 2];
 
         int p = getNewNextFirst(nextFirst);
         for (int i = 0; i < items.length; i++) {
@@ -92,6 +108,26 @@ public class ArrayDeque <T> {
         nextFirst = newItemsArray.length - 1;
         nextLast = size;
         items = newItemsArray;
+    }
+
+    /**
+     * Checks and resizes the size of array down if it is needed.
+     * Because the usage factor should be always lower the 25%.
+     */
+    private void downsize() {
+        double usage = (double) size / (double) items.length;
+        if (usage < 0.25) {
+            T[] newItemsArray = (T[]) new Object[items.length / 2];
+
+            int p = getNewNextFirst(nextFirst);
+            for (int i = 0; i < size; i++) {
+               newItemsArray[i] = items[p];
+               p = getNewNextFirst(p);
+            }
+            nextFirst = newItemsArray.length - 1;
+            nextLast = size;
+            items = newItemsArray;
+        }
     }
 
     /**
@@ -170,6 +206,7 @@ public class ArrayDeque <T> {
         items[currentFirst] = null;
         nextFirst = currentFirst;
         size --;
+        downsize();
 
         return firstItem;
     }
@@ -190,6 +227,7 @@ public class ArrayDeque <T> {
         items[currentLast] = null;
         nextLast = currentLast;
         size --;
+        downsize();
 
         return lastItem;
     }
@@ -197,7 +235,6 @@ public class ArrayDeque <T> {
     public static void main(String[] args) {
         ArrayDeque<Integer> myAlist = new ArrayDeque<Integer>();
 
-        int size = myAlist.getLength();
         for (int i = 0; i < 1000; i++) {
             myAlist.addLast(i);
         }

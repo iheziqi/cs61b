@@ -99,4 +99,40 @@ public class ArrayDequeTest {
             assertEquals("Should have the same value", i, (double) lld1.removeLast(), 0.0);
         }
     }
+
+    @Test
+    /* Tests removeFirst */
+    public void removeFirstTest() {
+        ArrayDeque<Integer> Al1 = new ArrayDeque<>();
+        for (int i = 0; i < 1000; i++) {
+            Al1.addFirst(i);
+        }
+
+        for (int i = 999; i >= 0; i--) {
+            assertEquals((int) Al1.removeFirst(), i);
+            double usage = (double) Al1.size() / (double) Al1.getLength();
+            if (usage < 0.25 && Al1.size() >= 16) {
+                assertTrue(false);
+            }
+
+        }
+    }
+
+    @Test
+    /* Tests removeLast */
+    public void removeLastTest() {
+        ArrayDeque<Integer> Al1 = new ArrayDeque<>();
+        for (int i = 0; i < 1000; i++) {
+            Al1.addLast(i);
+        }
+
+        for (int i = 999; i >0; i--) {
+            assertEquals((int) Al1.removeLast(), i);
+            double usage = (double) Al1.size() / (double) Al1.getLength();
+            if (usage < 0.25 && Al1.size() >= 16) {
+                assertTrue(false);
+            }
+        }
+
+    }
 }
