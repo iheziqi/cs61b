@@ -4,10 +4,10 @@ import java.util.Iterator;
 
 public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
     private class Node {
-        public Node prev;
-        public T item;
-        public Node next;
-        public Node(T t, Node p, Node n) {
+        private Node prev;
+        private T item;
+        private Node next;
+        Node(T t, Node p, Node n) {
             prev = p;
             item = t;
             next = n;
@@ -102,7 +102,7 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
      * */
     @Override
     public T removeLast() {
-        if(isEmpty()) {
+        if (isEmpty()) {
             return null;
         }
         T lastItem = sentinel.prev.item;
@@ -135,7 +135,8 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
     }
 
     /**
-     * Using recursive to get the item at the given index, where 0 is the front, 1 is the next item and so forth.
+     * Using recursive to get the item at the given index,
+     * where 0 is the front, 1 is the next item and so forth.
      * If no such item exists, returns null.
      * @return T or null
      * */
@@ -167,7 +168,7 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
      * */
     @Override
     public Iterator<T> iterator() {
-        return  new dequeSetIterator();
+        return new DequeSetIterator();
     }
 
     /**
@@ -175,10 +176,10 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
      * It checks the existence of next item in list and return this item (if exists).
      * @return T item (if exists)
      * */
-    private class dequeSetIterator implements Iterator<T> {
+    private class DequeSetIterator implements Iterator<T> {
         private int wizPos;
         private Node p;
-        public dequeSetIterator() {
+        DequeSetIterator() {
             wizPos = 0;
             p = sentinel;
         }
@@ -201,7 +202,7 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
      * @return boolean
      * */
     public boolean equals(Object o) {
-        if (!(o instanceof LinkedListDeque)) {
+        if (!(o instanceof Deque)) {
             return false;
         }
 
@@ -213,11 +214,11 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
         Node p = sentinel;
         Node op = (Node) ((LinkedListDeque<?>) o).sentinel;
         for (int i = 0; i < size; i++) {
-           p = p.next;
-           op = op.next;
-           if (p.item != op.item) {
-               return false;
-           }
+            p = p.next;
+            op = op.next;
+            if (p.item != op.item) {
+                return false;
+            }
         }
 
         return true;

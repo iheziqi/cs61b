@@ -40,7 +40,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
      * Changes nextFirst index.
      * */
     private void setNextFirst() {
-        nextFirst --;
+        nextFirst--;
         if (nextFirst < 0) {
             nextFirst = items.length - 1;
         }
@@ -50,7 +50,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
      * Changes nextLast index.
      * */
     private void setNextLast() {
-        nextLast ++;
+        nextLast++;
         if (nextLast > items.length - 1) {
             nextLast = 0;
         }
@@ -123,8 +123,8 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
             int p = getNewNextFirst(nextFirst);
             for (int i = 0; i < size; i++) {
-               newItemsArray[i] = items[p];
-               p = getNewNextFirst(p);
+                newItemsArray[i] = items[p];
+                p = getNewNextFirst(p);
             }
             nextFirst = newItemsArray.length - 1;
             nextLast = size;
@@ -145,7 +145,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
         items[nextFirst] = item;
         setNextFirst();
-        size ++;
+        size++;
     }
 
     /**
@@ -161,7 +161,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
         items[nextLast] = item;
         setNextLast();
-        size ++;
+        size++;
     }
 
     /**
@@ -169,7 +169,9 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
      * @return size
      * */
     @Override
-    public int size() { return size; }
+    public int size() {
+        return size;
+    }
 
     /**
      * Prints the items in the deque from first to last, separated by a space.
@@ -201,7 +203,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
         items[currentFirst] = null;
         nextFirst = currentFirst;
-        size --;
+        size--;
         downsize();
 
         return firstItem;
@@ -271,7 +273,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         public T next() {
             T returnItem = items[wizPos];
             wizPos = getNewNextFirst(wizPos);
-            p ++;
+            p++;
             return returnItem;
         }
 
@@ -285,7 +287,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
      * @return
      */
     public boolean equals(Object o) {
-        if (!(o instanceof ArrayDeque)) {
+        if (!(o instanceof Deque)) {
             return false;
         }
 
