@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayDeque<T> implements Iterable<T> {
+public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     private int size;
     private int nextFirst;
     private int nextLast;
@@ -136,6 +136,7 @@ public class ArrayDeque<T> implements Iterable<T> {
      * Adds an item of type T to the front of the deque. Item is never null.
      * @param item
      * */
+    @Override
     public void addFirst(T item) {
         // check if resizing is needed
         if (!checkNullInArray(nextFirst)) {
@@ -151,6 +152,7 @@ public class ArrayDeque<T> implements Iterable<T> {
      * Adds an item of type T to the back of deque. Item is never null.
      * @param item
      * */
+    @Override
     public void addLast(T item) {
         // check if resizing is needed
         if (!checkNullInArray(nextLast)) {
@@ -163,26 +165,17 @@ public class ArrayDeque<T> implements Iterable<T> {
     }
 
     /**
-     * Returns true if deque is empty, false otherwise.
-     * @return boolean
-     * */
-    public boolean isEmpty() {
-        if (size == 0) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * Returns the number of items in the deque.
      * @return size
      * */
+    @Override
     public int size() { return size; }
 
     /**
      * Prints the items in the deque from first to last, separated by a space.
      * Once all the items have been printed, print out a new line.
      * */
+    @Override
     public void printDeque() {
         int p = getNewNextFirst(nextFirst);
         for (int i = 0; i < size; i++) {
@@ -197,6 +190,7 @@ public class ArrayDeque<T> implements Iterable<T> {
      * If no such item exists, returns null.
      * @return T
      * */
+    @Override
     public T removeFirst() {
         int currentFirst = getFirstIndex();
 
@@ -218,6 +212,7 @@ public class ArrayDeque<T> implements Iterable<T> {
      * If no such item exists, returns null.
      * @return T
      * */
+    @Override
     public T removeLast() {
         int currentLast = getLastIndex();
 
@@ -239,6 +234,7 @@ public class ArrayDeque<T> implements Iterable<T> {
      * If no such item exists, returns null.
      * @return T or null
      * */
+    @Override
     public T get(int index) {
         int currentFirstItemIndex = getFirstIndex();
         int returnItemIndex = currentFirstItemIndex + index;
@@ -251,6 +247,7 @@ public class ArrayDeque<T> implements Iterable<T> {
     /**
      * Returns an iterator
      */
+    @Override
     public Iterator<T> iterator() {
         return new ArrayIterator();
     }
