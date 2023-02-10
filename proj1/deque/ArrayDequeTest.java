@@ -1,6 +1,7 @@
 package deque;
 
 import edu.princeton.cs.algs4.StdRandom;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -101,6 +102,18 @@ public class ArrayDequeTest {
     }
 
     @Test
+    /* Tests addFirst */
+    public void addFirstTest() {
+        ArrayDeque<Integer> Al1 = new ArrayDeque<>();
+        for (int i = 0; i < 1000; i++) {
+            Al1.addFirst(i);
+        }
+        for (int i = 999; i >= 0; i--) {
+            assertEquals(i, (int) Al1.removeFirst());
+        }
+    }
+
+    @Test
     /* Tests removeFirst */
     public void removeFirstTest() {
         ArrayDeque<Integer> Al1 = new ArrayDeque<>();
@@ -121,6 +134,7 @@ public class ArrayDequeTest {
     @Test
     /* Tests removeLast */
     public void removeLastTest() {
+
         ArrayDeque<Integer> Al1 = new ArrayDeque<>();
         for (int i = 0; i < 1000; i++) {
             Al1.addLast(i);
@@ -134,5 +148,79 @@ public class ArrayDequeTest {
             }
         }
 
+    }
+
+    @Test
+    /* Tests get */
+    public void getTest() {
+
+        ArrayDeque<Integer> Al1 = new ArrayDeque<>();
+        for (int i = 0; i < 1000; i++) {
+            Al1.addLast(i);
+        }
+        assertEquals(999, (int) Al1.get(999));
+        assertEquals(0, (int) Al1.get(0));
+        assertEquals(500, (int) Al1.get(500));
+    }
+
+    @Test
+    /* randomized test.*/
+    public void randomizedTest() {
+        ArrayDeque<Integer> lld1 = new ArrayDeque<>();
+        ArrayDeque<Integer> lld2 = new ArrayDeque<>();
+        int N = 1000000;
+        for (int i = 0; i < N; i += 1) {
+            int operationNumber = StdRandom.uniform(0, 5);
+            if (operationNumber == 0) {
+                // addLast
+                int randVal = StdRandom.uniform(0, 100);
+
+                lld1.addLast(randVal);
+                lld2.addLast(randVal);
+
+                lld1.addFirst(randVal);
+                lld2.addFirst(randVal);
+
+            } else if (operationNumber == 1) {
+                // size
+                int sizeOfLld1 = lld1.size();
+                int sizeOfLld2 = lld2.size();
+
+                assertEquals(sizeOfLld1, sizeOfLld2);
+            } else if (operationNumber == 2) {
+                // getLast
+                if (lld2.size() == 0) {
+                    continue;
+                }
+
+                int lastOfLld11 = lld1.get(lld1.size() - 1);
+                int lastOfLld21 = lld2.get(lld2.size() - 1);
+                int firstOfLld1 = lld1.get(0);
+                int firstOfLld2 = lld2.get(0);
+
+                assertEquals(lastOfLld11, lastOfLld21);
+                assertEquals(firstOfLld1, firstOfLld2);
+            } else if (operationNumber == 3) {
+                // removeLast
+                if (lld1.size() == 0) {
+                    continue;
+                }
+                int removedItemOfLld1 = lld1.removeLast();
+                int removedItemOfLld2 = lld2.removeLast();
+
+                assertEquals(removedItemOfLld1, removedItemOfLld2);
+            } else if (operationNumber == 4) {
+                // removeFirst
+                if (lld1.size() == 0) {
+                    continue;
+                }
+                int removedItemOfLld1 = lld1.removeFirst();
+                int removedItemOfLld2 = lld2.removeFirst();
+
+                assertEquals(removedItemOfLld1, removedItemOfLld2);
+                assertTrue(lld2.equals(lld1));
+            }
+        }
+        assertTrue(lld1.equals(lld2));
     }
 }

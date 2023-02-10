@@ -1,5 +1,7 @@
 package deque;
 
+import java.util.Iterator;
+
 public class ArrayDeque <T> {
     private int size;
     private int nextFirst;
@@ -116,7 +118,7 @@ public class ArrayDeque <T> {
      */
     private void downsize() {
         double usage = (double) size / (double) items.length;
-        if (usage < 0.25) {
+        if (usage < 0.25 && items.length >= 16) {
             T[] newItemsArray = (T[]) new Object[items.length / 2];
 
             int p = getNewNextFirst(nextFirst);
@@ -232,17 +234,79 @@ public class ArrayDeque <T> {
         return lastItem;
     }
 
-    public static void main(String[] args) {
-        ArrayDeque<Integer> myAlist = new ArrayDeque<Integer>();
-
-        for (int i = 0; i < 1000; i++) {
-            myAlist.addLast(i);
+    /**
+     * Gets the item at the given index, where 0 is the front, 1 is the next item and so forth.
+     * If no such item exists, returns null.
+     * @return T or null
+     * */
+    public T get(int index) {
+        int currentFirstItemIndex = getFirstIndex();
+        int returnItemIndex = currentFirstItemIndex + index;
+        if (returnItemIndex > items.length - 1) {
+            returnItemIndex = returnItemIndex - items.length;
         }
-        myAlist.printDeque();
+        return items[returnItemIndex];
+    }
 
-        for (int i = 0; i < 50; i++) {
-            myAlist.removeLast();
+    /**
+     * Returns an iterator
+     */
+    public Iterator<T> iterator() {
+        return new ArrayIterator();
+    }
+
+    /**
+     * Implements array iterator
+     */
+    private class ArrayIterator implements Iterator<T> {
+        private int wizPos;
+        private int p;
+
+        public ArrayIterator() {
+            wizPos = getFirstIndex();
+            p = 0;
         }
-        myAlist.printDeque();
+
+        public boolean hasNext() {
+            return p < size;
+        }
+
+        public T next() {
+            T returnItem = items[wizPos];
+            wizPos = getNewNextFirst(wizPos);
+            p ++;
+            return returnItem;
+        }
+
+    }
+
+    /**
+     * Returns whether the parameter o is equal to the Deque.
+     * o is considered equal if it is a Deque and if it contains the same contents
+     * (as goverened by the generic T’s equals method) in the same order.
+     * @param o
+     * @return
+     */
+    public boolean equals(Object o) {
+        if (!(o instanceof ArrayDeque)) {
+            return false;
+        }
+
+        int oSize = ((ArrayDeque<?>) o).size;
+        if (oSize != size) {
+            return false;
+        }
+
+        int pointerOfArray = getFirstIndex();
+        int pointerOfObject = ((ArrayDeque<?>) o).getFirstIndex();
+        for (int i = 0; i < size; i++) {
+            if (items[pointerOfArray] != ((ArrayDeque<?>) o).items[pointerOfObject]) {
+                return false;
+            }
+            pointerOfArray = getNewNextFirst(pointerOfArray);
+            pointerOfObject = ((ArrayDeque<?>) o).getNewNextFirst(pointerOfObject);
+        }
+
+        return true;
     }
 }

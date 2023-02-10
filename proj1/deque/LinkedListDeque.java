@@ -200,7 +200,7 @@ public class LinkedListDeque <T> {
     /**
      * Returns whether the parameter o is equal to the Deque.
      * o is considered equal if it is a Deque and if it contains the same contents in the same order.
-     * @params Object o
+     * @param Object o
      * @return boolean
      * */
     public boolean equals(Object o) {
