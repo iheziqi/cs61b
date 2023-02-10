@@ -123,11 +123,6 @@ public class ArrayDequeTest {
 
         for (int i = 999; i >= 0; i--) {
             assertEquals((int) Al1.removeFirst(), i);
-            double usage = (double) Al1.size() / (double) Al1.getLength();
-            if (usage < 0.25 && Al1.size() >= 16) {
-                assertTrue(false);
-            }
-
         }
     }
 
@@ -142,10 +137,6 @@ public class ArrayDequeTest {
 
         for (int i = 999; i >0; i--) {
             assertEquals((int) Al1.removeLast(), i);
-            double usage = (double) Al1.size() / (double) Al1.getLength();
-            if (usage < 0.25 && Al1.size() >= 16) {
-                assertTrue(false);
-            }
         }
 
     }

@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayDeque <T> {
+public class ArrayDeque<T> implements Iterable<T> {
     private int size;
     private int nextFirst;
     private int nextLast;
@@ -32,7 +32,7 @@ public class ArrayDeque <T> {
     /**
      * Returns the length of array.
      * */
-    public int getLength() {
+    private int getLength() {
         return items.length;
     }
 
