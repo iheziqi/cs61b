@@ -287,23 +287,22 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
      * @return
      */
     public boolean equals(Object o) {
-        if (!(o instanceof Deque)) {
-            return false;
+        if (this == o) {
+            return true;
         }
 
-        int oSize = ((ArrayDeque<?>) o).size;
-        if (oSize != size) {
-            return false;
-        }
-
-        int pointerOfArray = getFirstIndex();
-        int pointerOfObject = ((ArrayDeque<?>) o).getFirstIndex();
-        for (int i = 0; i < size; i++) {
-            if (items[pointerOfArray] != ((ArrayDeque<?>) o).items[pointerOfObject]) {
+        if (o instanceof ArrayDeque aArray) {
+            // check arrays are of the same size
+            if (aArray.size != this.size) {
                 return false;
             }
-            pointerOfArray = getNewNextFirst(pointerOfArray);
-            pointerOfObject = ((ArrayDeque<?>) o).getNewNextFirst(pointerOfObject);
+
+            // check that all of My items are in the other array
+            for (int i = 0; i < this.size; i++) {
+                if (items[i] != aArray.items[i]) {
+                    return false;
+                }
+            }
         }
 
         return true;
