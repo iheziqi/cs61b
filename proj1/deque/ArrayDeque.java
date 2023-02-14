@@ -303,8 +303,10 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
                     return false;
                 }
             }
+
+            return true;
         }
 
-        return true;
+        return false;
     }
 }
