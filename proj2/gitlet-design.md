@@ -1,6 +1,6 @@
 # Gitlet Design Document
 
-**Name**:
+**Name**: Ziq He
 
 ## Classes and Data Structures
 
@@ -24,3 +24,12 @@
 
 ## Persistence
 
+## Appendix
+read git directory
+![img.png](img.png)
+
+### There are three objects that git will track:
+
+- Blob: contents of a file
+- Tree: a directory listing (of blobs and trees)
+- Commit: a snapshot of the working tree
