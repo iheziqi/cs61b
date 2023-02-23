@@ -12,23 +12,30 @@ import static gitlet.Utils.*;
  *  @author Ziqi He
  */
 public class Repository {
-    /**
-     * TODO: add instance variables here.
-     *
-     * List all instance variables of the Repository class here with a useful
-     * comment above them describing what that variable represents and how that
-     * variable is used. We've provided two examples for you.
-     */
 
     /** The current working directory. */
     public static final File CWD = new File(System.getProperty("user.dir"));
+
     /** The .gitlet directory. */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
 
-    public static final File STAGING_AREA = join(GITLET_DIR, "objects");
+    /** The head pointer pointing to current working branch. */
+    public static final File HEAD = join(GITLET_DIR, "HEAD");
+
+    /** References directory. */
+    public static final File REFS = join(GITLET_DIR, "refs");
+
+    /** The directory to store branches. */
+    public static final File BRANCHES = join(REFS, "branches");
+
+    /** The Objects directory to store copies of file contents in working directory. */
+    public static final File OBJECTS = join(GITLET_DIR, "objects");
+
+    /** The file representing staging area of gitlet. */
+    public static final File INDEX = join(GITLET_DIR, "index");
 
     /**
-     * Creates required directory for gitlet if it not exists
+     * Creates required directory for gitlet if it not exists.
      */
     public static void createGitletDir() {
         if (GITLET_DIR.exists()) {
@@ -38,24 +45,25 @@ public class Repository {
             return;
         }
         GITLET_DIR.mkdir();
-        STAGING_AREA.mkdir();
+        REFS.mkdir();
+        OBJECTS.mkdir();
     }
 
     /**
-     * Creates directory to store objects
-     * with the name based on the first two SHA-1 hash value.
-     * @param f file object to be stored
+     * Names it in correct way and puts the blob to the correct directory.
+     * Inside the .gitlet/objects directory, the directory names are made by first two characters
+     * of hash value of file contents. The rest of the hash is used as the name of the blob file.
+     * @param f
      */
-    public static void createObjectDir(File f) {
-        // calculates the hash value of the file
-        String hashVal = sha1(f);
-        // extracts first two characters of hash value
-        String firstTwoHashVal = hashVal.substring(0, 2);
-
-        File newObjectDir = join(STAGING_AREA, firstTwoHashVal);
-        if (!newObjectDir.exists()) {
-            newObjectDir.mkdir();
-        }
+    private void setBlob(File f) {
+        // TODO
     }
 
+    /**
+     * Creates the blob of given file or object.
+     * @param f
+     */
+    public static void createBlob(File f) {
+        // TODO
+    }
 }

@@ -9,7 +9,7 @@ import static gitlet.Utils.*;
 /** Handles command gitlet add [file name]
  * @author Ziqi He
  */
-public class Add {
+public class Index {
 
     /**
      * Adds a copy of the file as it currently exists to the staging area
