@@ -23,9 +23,10 @@ public class Main {
         switch(firstArg) {
             case "init":
                 Repository.createGitletDir();
+                // TODO: generate initial commit
                 break;
             case "add":
-                if (Repository.checkGitletExists()) {
+                if (!Repository.checkGitletExists()) {
                     message("Not in an initialized Gitlet directory.");
                 }
                 Repository.setBlob(args[1]);
