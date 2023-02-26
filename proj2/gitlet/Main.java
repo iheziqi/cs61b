@@ -1,5 +1,7 @@
 package gitlet;
 
+import java.io.File;
+
 import static gitlet.Utils.*;
 
 /** Driver class for Gitlet, a subset of the Git version-control system.
@@ -11,19 +13,22 @@ public class Main {
      *  <COMMAND> <OPERAND1> <OPERAND2> ... 
      */
     public static void main(String[] args) {
-        // if args is empty
-        String firstArg = args[0];
-        if (firstArg == null) {
+        // check whether args is empty
+        if (args.length == 0) {
             message("Please enter a command");
             System.exit(0);
         }
+        String firstArg = args[0];
 
         switch(firstArg) {
             case "init":
                 Repository.createGitletDir();
                 break;
             case "add":
-                // TODO: handle the `add [filename]` command
+                if (Repository.checkGitletExists()) {
+                    message("Not in an initialized Gitlet directory.");
+                }
+                Repository.setBlob(args[1]);
                 break;
             // TODO: FILL THE REST IN
             default:

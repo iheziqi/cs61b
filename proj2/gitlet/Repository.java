@@ -1,14 +1,13 @@
 package gitlet;
 
 import java.io.File;
+import java.io.IOException;
+
 import static gitlet.Utils.*;
 
-// TODO: any imports you need here
 
 /** Represents a gitlet repository.
- *  TODO: It's a good idea to give a description here of what else this Class
- *  does at a high level.
- *
+ * This class does the relevant IO operation to .gitlet directory.
  *  @author Ziqi He
  */
 public class Repository {
@@ -35,6 +34,14 @@ public class Repository {
     public static final File INDEX = join(GITLET_DIR, "index");
 
     /**
+     * checks whether .gitlet directory exists
+     * @return a boolean value of .gitlet directory existence
+     */
+    public static boolean checkGitletExists() {
+        return GITLET_DIR.exists();
+    }
+
+    /**
      * Creates required directory for gitlet if it not exists.
      */
     public static void createGitletDir() {
@@ -53,17 +60,33 @@ public class Repository {
      * Names it in correct way and puts the blob to the correct directory.
      * Inside the .gitlet/objects directory, the directory names are made by first two characters
      * of hash value of file contents. The rest of the hash is used as the name of the blob file.
-     * @param f
+     * @param fileName
      */
-    private void setBlob(File f) {
-        // TODO
+    public static void setBlob(String fileName) {
+        File f = join(CWD, fileName);
+        if (!f.exists()) {
+            message("File does not exist.");
+            System.exit(0);
+        }
+
+        byte[] blobContent = readContents(f);
+
+        String hash = sha1(blobContent);
+        // first two characters as directory name
+        String firstTwoHash = hash.substring(0, 2);
+        // rest of hash as file name
+        String restOfHash = hash.substring(3, UID_LENGTH);
+
+        // Using the first two hash of blob to create a directory
+        // if it doesn't exist
+        File objectDirectory = join(OBJECTS, firstTwoHash);
+        if (!objectDirectory.exists()) {
+            objectDirectory.mkdir();
+        }
+
+        // Using the rest of hash as file name
+        File blob = join(objectDirectory, restOfHash);
+        writeContents(blob, blobContent);
     }
 
-    /**
-     * Creates the blob of given file or object.
-     * @param f
-     */
-    public static void createBlob(File f) {
-        // TODO
-    }
 }
