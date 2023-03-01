@@ -29,7 +29,7 @@ public class Main {
                 if (!Repository.checkGitletExists()) {
                     message("Not in an initialized Gitlet directory.");
                 }
-                Repository.setBlob(args[1]);
+                Index.fromFile().addFile(args[1]);
                 break;
             // TODO: FILL THE REST IN
             default:

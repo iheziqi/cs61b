@@ -11,7 +11,13 @@ import static gitlet.Utils.*;
  */
 public class Index implements Serializable {
     /** The data structure represents staging area. */
-    HashMap<String, IndexNode> stagingArea = new HashMap<>();
+    HashMap<String, IndexNode> stagingArea;
+
+    /** Constructor of Index */
+    public Index() {
+        stagingArea = new HashMap<>();
+        this.writeIndex();
+    }
 
     /** Node in the index tree. */
     private class IndexNode {
@@ -30,12 +36,23 @@ public class Index implements Serializable {
      */
     public void addFile(String fileName) {
         File currentFile = join(Repository.CWD, fileName);
+
         // get the hash value of the file.
         // the blob path is made up of the hash value of blob, and it is in the "object" directory.
         // the first two is directory name, the rest is file name.
         String[] blobPath = Repository.setBlob(currentFile.getName());
         IndexNode node = new IndexNode(blobPath[0], blobPath[1]);
         stagingArea.put(currentFile.getPath(), node);
+
+        // serialize the index to store information
+        writeIndex();
+    }
+
+    /** Creates a new index (staging area). */
+    public static Index createIndex() {
+        Index index = new Index();
+        index.writeIndex();
+        return index;
     }
 
     /**
@@ -48,10 +65,9 @@ public class Index implements Serializable {
 
     /**
      * Saves the index.
-     * @param index
      */
-    public void writeIndex(Index index) {
-        writeObject(Repository.INDEX, index);
+    public void writeIndex() {
+        writeObject(Repository.INDEX, this);
     }
 
     /**

@@ -51,9 +51,13 @@ public class Repository {
             );
             return;
         }
+        // create relevant folders
         GITLET_DIR.mkdir();
         REFS.mkdir();
         OBJECTS.mkdir();
+
+        // create index(staging area)
+        new Index();
     }
 
     /**
