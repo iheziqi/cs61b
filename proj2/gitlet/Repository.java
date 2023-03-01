@@ -57,12 +57,14 @@ public class Repository {
     }
 
     /**
-     * Names it in correct way and puts the blob to the correct directory.
+     * Names the blob in correct way and puts it into the correct directory.
      * Inside the .gitlet/objects directory, the directory names are made by first two characters
      * of hash value of file contents(byte array). The rest of the hash is used as the name of the blob file.
      * @param fileName
+     * @return a string array including the path of blob,
+     * the first element is the folder name(first two hash), the second is the file name (rest of hash).
      */
-    public static void setBlob(String fileName) {
+    public static String[] setBlob(String fileName) {
         File f = join(CWD, fileName);
         if (!f.exists()) {
             message("File does not exist.");
@@ -78,6 +80,9 @@ public class Repository {
         String firstTwoHash = hash.substring(0, 2);
         // Rest of hash as file name
         String restOfHash = hash.substring(2, UID_LENGTH);
+        String[] blobPath = new String[2];
+        blobPath[0] = firstTwoHash;
+        blobPath[1] = restOfHash;
 
         // Using the first two hash of blob to create a directory
         // if it doesn't exist
@@ -90,6 +95,8 @@ public class Repository {
         File blob = join(objectDirectory, restOfHash);
         // Write the content into blob
         writeContents(blob, blobContent);
+
+        return blobPath;
     }
 
 }
