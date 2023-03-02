@@ -58,6 +58,20 @@ public class Repository {
 
         // create index(staging area)
         new Index();
+
+        // create first commit
+        Commit initalCommit = new Commit(
+                "0000",
+                Commit.getFormattedDate(0),
+                "default initial commit"
+        );
+
+        // create default branch: master branch
+        BRANCHES.mkdir();
+        writeContents(join(BRANCHES, "master"), sha1(initalCommit));
+
+        // create head pointer pointing to default branch master
+        writeContents(HEAD, sha1(initalCommit));
     }
 
     /**
@@ -103,4 +117,12 @@ public class Repository {
         return blobPath;
     }
 
+    /**
+     * Serializes the commit to file.
+     * @return
+     */
+    public String[] setCommitBlob() {
+        // TODO: Serialize the commit and store it to object folder.
+        return null;
+    }
 }

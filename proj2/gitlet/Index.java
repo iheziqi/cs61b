@@ -6,7 +6,12 @@ import java.util.HashMap;
 
 import static gitlet.Utils.*;
 
-/** Handles command gitlet add [file name]
+/**
+ * Handles command gitlet add [file name]
+ * Index represents the staging area in Gitlet.
+ * When the user use command gitlet add [file name], the file path and the blob path of file
+ * are stored in a HashMap i.e. staging area.
+ * Once the user commits, clean the staging area to empty.
  * @author Ziqi He
  */
 public class Index implements Serializable {
@@ -19,14 +24,19 @@ public class Index implements Serializable {
         this.writeIndex();
     }
 
-    /** Node in the index tree. */
+    /**
+     * Private helper class.
+     * This class represents Node in the index tree.
+     * */
     private class IndexNode {
         String blobPath;
+        String folderNameInObject;
         String hashOfFile;
 
-        public IndexNode(String blobPath, String hashOfFile) {
+        public IndexNode(String blobPath, String folderNameInObject) {
             this.blobPath = blobPath;
-            this.hashOfFile = hashOfFile;
+            this.folderNameInObject = folderNameInObject;
+            this.hashOfFile = blobPath + folderNameInObject;
         }
     }
 
@@ -64,7 +74,7 @@ public class Index implements Serializable {
     }
 
     /**
-     * Saves the index.
+     * Saves the index to file.
      */
     public void writeIndex() {
         writeObject(Repository.INDEX, this);
