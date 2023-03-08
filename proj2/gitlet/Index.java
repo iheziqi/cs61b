@@ -51,8 +51,11 @@ public class Index implements Serializable {
         // the blob path is made up of the hash value of blob, and it is in the "object" directory.
         // the first two is directory name, the rest is file name.
         String[] blobPath = Repository.setBlob(currentFile.getName());
+        // use node to record which files have been added
         IndexNode node = new IndexNode(blobPath[0], blobPath[1]);
-        stagingArea.put(currentFile.getPath(), node);
+        // the index has been created in gitlet initial,
+        // so here every time we read from file and put new file into map.
+        Index.fromFile().stagingArea.put(currentFile.getPath(), node);
 
         // serialize the index to store information
         writeIndex();
@@ -85,5 +88,6 @@ public class Index implements Serializable {
      */
     public void clearIndex() {
         this.stagingArea.clear();
+        writeIndex();
     }
 }

@@ -23,7 +23,6 @@ public class Main {
         switch(firstArg) {
             case "init":
                 Repository.createGitletDir();
-                // TODO: generate initial commit
                 break;
             case "add":
                 if (!Repository.checkGitletExists()) {
@@ -31,7 +30,14 @@ public class Main {
                 }
                 Index.fromFile().addFile(args[1]);
                 break;
-            // TODO: FILL THE REST IN
+            case "commit":
+                if (args[1] == null) {
+                    message("Please enter a commit message.");
+                }
+                Commit thisCommit = new Commit(
+                        readContentsAsString(Repository.HEAD), Commit.getFormattedDate(), args[1]
+                );
+                break;
             default:
                 System.out.println("No command with that name exists.");
         }

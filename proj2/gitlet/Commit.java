@@ -43,6 +43,23 @@ public class Commit implements Serializable {
         this.timestamp = timestamp;
         this.message = message;
         this.index = Index.fromFile();
+
+        // after every commit, the staging area is cleared.
+        index.clearIndex();
+
+        // point whichever branch pointer to this new commit
+        // TODO: here master can be different in the future, but now I just hard-coded it as master branch
+    }
+
+    /**
+     * Calculates the sha1 value of this commit as identifier
+     * @return hash value of this commit
+     */
+    public String getHash() {
+        String hash = sha1(
+                message, author, timestamp, hashOfParent, String.valueOf(index.hashCode())
+        );
+        return hash;
     }
 
     /**
@@ -52,7 +69,7 @@ public class Commit implements Serializable {
      * Use first two hash as folder name, and the rest of hash as file name.
      * */
     public void writeCommit() {
-       String hashOfCommit = sha1(this);
+       String hashOfCommit = getHash();
        String firstTwoHash = hashOfCommit.substring(0, 2);
        String restHash = hashOfCommit.substring(2, UID_LENGTH);
 
@@ -91,6 +108,7 @@ public class Commit implements Serializable {
 
     /**
      * Gets formatted date.
+     * @param time if you want to output unix epoch time, use 0
      * @return String of formatted date
      */
     public static String getFormattedDate(int time) {
@@ -107,5 +125,11 @@ public class Commit implements Serializable {
         String formattedDate = formatter.format(date);
 
         return formattedDate;
+    }
+
+    public static void main(String[] args) {
+        Commit myCommit = new Commit("9999", getFormattedDate(), "hello world");
+        String hashOfCommit = sha1(myCommit);
+        System.out.println(hashOfCommit);
     }
 }

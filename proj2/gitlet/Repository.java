@@ -59,19 +59,21 @@ public class Repository {
         // create index(staging area)
         new Index();
 
-        // create first commit
+        // create initial commit
+        // the time of initial commit is Unix epoch time
         Commit initalCommit = new Commit(
                 "0000",
                 Commit.getFormattedDate(0),
                 "default initial commit"
         );
+        initalCommit.writeCommit();
 
         // create default branch: master branch
         BRANCHES.mkdir();
-        writeContents(join(BRANCHES, "master"), sha1(initalCommit));
+        Branch.createDefaultBranch(initalCommit.getHash());
 
         // create head pointer pointing to default branch master
-        writeContents(HEAD, sha1(initalCommit));
+        writeContents(HEAD, "master");
     }
 
     /**
