@@ -23,7 +23,7 @@ public class Index implements Serializable {
     /** Constructor of Index */
     public Index() {
         stagingArea = new HashMap<>();
-//        this.writeIndex();
+        this.writeIndex();
     }
 
     /**
@@ -130,5 +130,11 @@ public class Index implements Serializable {
         System.out.println(Index.fromFile());
         System.out.println("Following is the content of staging area: ");
         System.out.println(Arrays.asList(Index.fromFile().stagingArea));
+    }
+
+    public void print() {
+        System.out.println(this.stagingArea);
+        System.out.println("Following is the content of staging area: ");
+        System.out.println(Arrays.asList(this.stagingArea));
     }
 }
