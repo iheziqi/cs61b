@@ -46,9 +46,6 @@ public class Commit implements Serializable {
 
         // after every commit, the staging area is cleared.
         index.clearIndex();
-
-        // point whichever branch pointer to this new commit
-        // TODO: here master can be different in the future, but now I just hard-coded it as master branch
     }
 
     /**
@@ -56,9 +53,7 @@ public class Commit implements Serializable {
      * @return hash value of this commit
      */
     public String getHash() {
-        String hash = sha1(
-                message, author, timestamp, hashOfParent, String.valueOf(index.hashCode())
-        );
+        String hash = sha1(message, author, timestamp, hashOfParent, String.valueOf(index.hashCode()));
         return hash;
     }
 
@@ -84,6 +79,10 @@ public class Commit implements Serializable {
         File commitContent = join(objectDirectory, restHash);
         // Write the content into blob
         writeObject(commitContent, this);
+
+        // Update branch pointer pointing to this commit
+        // TODO: change the branch name to user's specific in the future.
+        Branch.updateBranchPointer("master", hashOfCommit);
     }
 
     /**

@@ -34,9 +34,11 @@ public class Main {
                 if (args[1] == null) {
                     message("Please enter a commit message.");
                 }
+                // TODO: change the branch name to user's demand, here I hardcoded master branch.
                 Commit thisCommit = new Commit(
-                        readContentsAsString(Repository.HEAD), Commit.getFormattedDate(), args[1]
+                        Branch.getLastCommit("master"), Commit.getFormattedDate(), args[1]
                 );
+                thisCommit.writeCommit();
                 break;
             default:
                 System.out.println("No command with that name exists.");

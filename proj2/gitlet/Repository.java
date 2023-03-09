@@ -51,6 +51,7 @@ public class Repository {
             );
             return;
         }
+
         // create relevant folders
         GITLET_DIR.mkdir();
         REFS.mkdir();
