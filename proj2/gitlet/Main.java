@@ -36,6 +36,11 @@ public class Main {
                     message("Please enter a commit message.");
                     System.exit(0);
                 }
+                // If no files have been staged, abort.
+                if (Index.fromFile().stagingArea.isEmpty()) {
+                    message("No changes added to the commit");
+                    System.exit(0);
+                }
                 // TODO: change the branch name to user's demand, here I hardcoded master branch.
                 Commit thisCommit = new Commit(
                         Branch.getLastCommit("master"), Commit.getFormattedDate(), args[1]
@@ -50,7 +55,8 @@ public class Main {
                     message("Please enter the filename of commit");
                     System.exit(0);
                 }
-                Commit commit = readObject(join(Repository.OBJECTS, args[1], args[2]), Commit.class);
+                // Commit commit = readObject(join(Repository.OBJECTS, args[1], args[2]), Commit.class);
+                Commit commit = Commit.readCommit(args[1] + args[2]);
                 if (commit == null){
                     System.out.println("error!");
                     System.exit(0);

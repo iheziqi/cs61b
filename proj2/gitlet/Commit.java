@@ -1,5 +1,7 @@
 package gitlet;
 
+import edu.princeton.cs.algs4.StdOut;
+
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -55,6 +57,18 @@ public class Commit implements Serializable {
     }
 
     /**
+     * Reads the commit from object folder.
+     * @param hashOfCommit
+     * @return Commit object
+     */
+    public static Commit readCommit(String hashOfCommit) {
+        String[] blobPath = Repository.getBlobPath(hashOfCommit);
+        String firstTwoHash = blobPath[0];
+        String restOfHash = blobPath[1];
+        return readObject(join(Repository.OBJECTS, firstTwoHash, restOfHash), Commit.class);
+    }
+
+    /**
      * Serializes this commit.
      * Store this commit into directory "Objects".
      * It has to follow the naming rule in this folder.
@@ -62,8 +76,9 @@ public class Commit implements Serializable {
      * */
     public void writeCommit() {
        String hashOfCommit = getHash();
-       String firstTwoHash = hashOfCommit.substring(0, 2);
-       String restHash = hashOfCommit.substring(2, UID_LENGTH);
+       String[] blobPath = Repository.getBlobPath(hashOfCommit);
+       String firstTwoHash = blobPath[0];
+       String restHash = blobPath[1];
 
         // Using the first two hash of blob to create a directory
         // if it doesn't exist
@@ -80,6 +95,18 @@ public class Commit implements Serializable {
         // Update branch pointer pointing to this commit
         // TODO: change the branch name to user's specific in the future.
         Branch.updateBranchPointer("master", hashOfCommit);
+
+        // The staging area is cleared after a commit.
+        Index.fromFile().clearIndex();
+    }
+
+    /**
+     * Equal method of commit object.
+     * @param commit
+     * @return
+     */
+    public boolean equals(Commit commit){
+        return this.index.equals(commit.index);
     }
 
     /**
@@ -127,5 +154,7 @@ public class Commit implements Serializable {
         System.out.println("Parent commit: " + this.hashOfParent);
         System.out.println("Commit message: " + this.message);
         System.out.println("Commit timestamp: " + this.timestamp);
+        System.out.print("Index: ");
+        this.index.print();
     }
 }

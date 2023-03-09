@@ -1,10 +1,10 @@
 package gitlet;
 
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 import static gitlet.Utils.*;
 
@@ -23,7 +23,7 @@ public class Index implements Serializable {
     /** Constructor of Index */
     public Index() {
         stagingArea = new HashMap<>();
-        this.writeIndex();
+//        this.writeIndex();
     }
 
     /**
@@ -58,12 +58,13 @@ public class Index implements Serializable {
         // the blob path is made up of the hash value of blob, and it is in the "object" directory.
         // the first two is directory name, the rest is file name.
         String[] blobPath = Repository.setBlob(currentFile.getName());
+
         // use node to record which files have been added
         IndexNode node = new IndexNode(blobPath[0], blobPath[1]);
+
         // the index has been created in gitlet initial,
         // so here every time we read from file and put new file into map.
         this.stagingArea.put(currentFile.getPath(), node);
-        System.out.println(this.stagingArea);
 
         // serialize the index to store information
         writeIndex();
@@ -92,14 +93,42 @@ public class Index implements Serializable {
         writeIndex();
     }
 
+    /**
+     * Overrides the .equals() method.
+     * This method compares the staging area (hashmap) of two index,
+     * If both of them have the same contents, then it outputs true.
+     * @param obj
+     * @return
+     */
+    @Override
+    public boolean equals(Object obj) {
+       if (obj == null || !(obj instanceof Index)) {
+           return false;
+       }
+
+       Index other = (Index) obj;
+       if (this.stagingArea.size() != other.stagingArea.size()) {
+           return false;
+       }
+
+       for (String key : this.stagingArea.keySet()) {
+           IndexNode thisNode = this.stagingArea.get(key);
+           IndexNode otherNode = other.stagingArea.get(key);
+
+           if (otherNode == null || !thisNode.hashOfFile.equals(otherNode.hashOfFile)) {
+               return false;
+           }
+       }
+
+       return true;
+    }
+
+    /**
+     * Prints the staging area.
+     */
     public static void printIndex(){
         System.out.println(Index.fromFile());
         System.out.println("Following is the content of staging area: ");
-//        for (Map.Entry<String, IndexNode> entry : Index.fromFile().stagingArea.entrySet()) {
-//            String key = entry.getKey();
-//            String value = entry.getValue().toString();
-//            System.out.println(key + " : " + value);
-//        }
         System.out.println(Arrays.asList(Index.fromFile().stagingArea));
     }
 }

@@ -98,13 +98,12 @@ public class Repository {
 
         // Calculate the hash of byte array
         String hash = sha1(blobContent);
+
         // First two characters as directory name
-        String firstTwoHash = hash.substring(0, 2);
         // Rest of hash as file name
-        String restOfHash = hash.substring(2, UID_LENGTH);
-        String[] blobPath = new String[2];
-        blobPath[0] = firstTwoHash;
-        blobPath[1] = restOfHash;
+        String[] blobPath = getBlobPath(hash);
+        String firstTwoHash = blobPath[0];
+        String restOfHash = blobPath[1];
 
         // Using the first two hash of blob to create a directory
         // if it doesn't exist
@@ -118,6 +117,13 @@ public class Repository {
         // Write the content into blob
         writeContents(blob, blobContent);
 
+        return blobPath;
+    }
+
+    public static String[] getBlobPath(String hash) {
+        String firstTwoHash = hash.substring(0, 2);
+        String restHash = hash.substring(2, UID_LENGTH);
+        String[] blobPath = new String[]{firstTwoHash, restHash};
         return blobPath;
     }
 
