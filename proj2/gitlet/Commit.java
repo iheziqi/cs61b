@@ -43,9 +43,6 @@ public class Commit implements Serializable {
         this.timestamp = timestamp;
         this.message = message;
         this.index = Index.fromFile();
-
-        // after every commit, the staging area is cleared.
-        index.clearIndex();
     }
 
     /**
@@ -126,9 +123,9 @@ public class Commit implements Serializable {
         return formattedDate;
     }
 
-    public static void main(String[] args) {
-        Commit myCommit = new Commit("9999", getFormattedDate(), "hello world");
-        String hashOfCommit = sha1(myCommit);
-        System.out.println(hashOfCommit);
+    public void print() {
+        System.out.println("Parent commit: " + this.hashOfParent);
+        System.out.println("Commit message: " + this.message);
+        System.out.println("Commit timestamp: " + this.timestamp);
     }
 }

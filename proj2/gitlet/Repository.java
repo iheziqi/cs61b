@@ -71,7 +71,7 @@ public class Repository {
         // create default branch: master branch
         BRANCHES.mkdir();
         Branch.createDefaultBranch(initalCommit.getHash());
-        
+
         initalCommit.writeCommit();
 
         // create head pointer pointing to default branch master

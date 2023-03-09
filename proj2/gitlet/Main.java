@@ -27,18 +27,36 @@ public class Main {
             case "add":
                 if (!Repository.checkGitletExists()) {
                     message("Not in an initialized Gitlet directory.");
+                    System.exit(0);
                 }
                 Index.fromFile().addFile(args[1]);
                 break;
             case "commit":
-                if (args[1] == null) {
+                if (args.length < 2) {
                     message("Please enter a commit message.");
+                    System.exit(0);
                 }
                 // TODO: change the branch name to user's demand, here I hardcoded master branch.
                 Commit thisCommit = new Commit(
                         Branch.getLastCommit("master"), Commit.getFormattedDate(), args[1]
                 );
                 thisCommit.writeCommit();
+                break;
+            case "cat-index":
+                Index.printIndex();
+                break;
+            case "cat-commit":
+                if(args.length < 3) {
+                    message("Please enter the filename of commit");
+                    System.exit(0);
+                }
+                Commit commit = readObject(join(Repository.OBJECTS, args[1], args[2]), Commit.class);
+                if (commit == null){
+                    System.out.println("error!");
+                    System.exit(0);
+                }
+                System.out.println(commit);
+                commit.print();
                 break;
             default:
                 System.out.println("No command with that name exists.");
