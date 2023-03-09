@@ -67,11 +67,12 @@ public class Repository {
                 Commit.getFormattedDate(0),
                 "default initial commit"
         );
-        initalCommit.writeCommit();
 
         // create default branch: master branch
         BRANCHES.mkdir();
         Branch.createDefaultBranch(initalCommit.getHash());
+        
+        initalCommit.writeCommit();
 
         // create head pointer pointing to default branch master
         writeContents(HEAD, "master");
