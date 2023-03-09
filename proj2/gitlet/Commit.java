@@ -48,6 +48,14 @@ public class Commit implements Serializable {
     }
 
     /**
+     * Getter of index.
+     * @return
+     */
+    public Index getIndex() {
+        return this.index;
+    }
+
+    /**
      * Calculates the sha1 value of this commit as identifier
      * @return hash value of this commit
      */

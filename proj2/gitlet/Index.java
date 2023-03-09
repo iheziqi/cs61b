@@ -1,6 +1,8 @@
 package gitlet;
 
 
+import jh61b.junit.In;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -53,20 +55,55 @@ public class Index implements Serializable {
      */
     public void addFile(String fileName) {
         File currentFile = join(Repository.CWD, fileName);
+        // If the file doesn't exist.
+        if (!currentFile.exists()) {
+            message("File does not exist.");
+            return;
+        }
 
-        // get the hash value of the file.
-        // the blob path is made up of the hash value of blob, and it is in the "object" directory.
-        // the first two is directory name, the rest is file name.
+        // TODO: Consider here, how to deal with already-staged file and file changed, added and changed back.
+        // If the file already-staged, overwrites the previous entry in staging area.
+        String currentFilePath = currentFile.getPath();
+        Index index = Index.fromFile();
+        if (index.stagingArea.get(currentFilePath) != null) {
+            IndexNode node = index.stagingArea.get(currentFilePath);
+            String hashOfBlob = node.hashOfFile;
+            // delete the blob
+            Repository.deleteBlob(hashOfBlob);
+            System.out.println("Deleted duplicated blob.");
+        }
+
+        // If the current working version of the file is identical to
+        // the version in the current commit, will not stage it to be added,
+        // and remove it from the staging area if it is already there.
+        // (as can happen when a file is changed, added, and the changed back to it's original)
+        // TODO: Here I hardcoded the branch name, change it in the future to dynamic.
+        String hashOfLastCommit = Branch.getLastCommit("master");
+        Commit lastCommit = Commit.readCommit(hashOfLastCommit);
+        if (
+                lastCommit != null
+                && lastCommit.getIndex().stagingArea.get(currentFilePath) != null
+                && index.stagingArea.get(currentFilePath) != null
+        ) {
+            IndexNode node = index.stagingArea.get(currentFilePath);
+            String hashOfBlob = node.hashOfFile;
+            Repository.deleteBlob(hashOfBlob);
+            System.out.println("Deleted duplicated blob.");
+        }
+
+        // Get the hash value of the file.
+        // The blob path is made up of the hash value of blob, and it is in the "object" directory.
+        // The first two is directory name, the rest is file name.
         String[] blobPath = Repository.setBlob(currentFile.getName());
 
-        // use node to record which files have been added
+        // Use node to record which files have been added
         IndexNode node = new IndexNode(blobPath[0], blobPath[1]);
 
-        // the index has been created in gitlet initial,
+        // The index has been created in gitlet initial,
         // so here every time we read from file and put new file into map.
         this.stagingArea.put(currentFile.getPath(), node);
 
-        // serialize the index to store information
+        // Serialize the index to store information.
         writeIndex();
     }
 

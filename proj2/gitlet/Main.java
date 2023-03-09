@@ -29,6 +29,10 @@ public class Main {
                     message("Not in an initialized Gitlet directory.");
                     System.exit(0);
                 }
+                if (args.length < 2) {
+                    message("File does not exist.");
+                    System.exit(0);
+                }
                 Index.fromFile().addFile(args[1]);
                 break;
             case "commit":

@@ -120,6 +120,27 @@ public class Repository {
         return blobPath;
     }
 
+    public static void getBlobFromFile(String hashOfFile) {
+
+    }
+
+    /**
+     * Deletes the blob of given file.
+     * @param hashOfFile
+     */
+    public static void deleteBlob(String hashOfFile){
+        String[] blobPath = getBlobPath(hashOfFile);
+        // Just delete the file, do not delete the folder!
+        File blob = join(Repository.OBJECTS, blobPath[0], blobPath[1]);
+        blob.delete();
+    }
+
+    /**
+     * Gets the blob path inside Object directory.
+     * @param hash
+     * @return a list of strings. The first string is the first two characters of hash value.
+     * The second string is the rest of hash value, i.e. the file name.
+     */
     public static String[] getBlobPath(String hash) {
         String firstTwoHash = hash.substring(0, 2);
         String restHash = hash.substring(2, UID_LENGTH);
