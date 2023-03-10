@@ -65,7 +65,8 @@ public class Repository {
         Commit initalCommit = new Commit(
                 "0000",
                 Commit.getFormattedDate(0),
-                "default initial commit"
+                "default initial commit",
+                true
         );
 
         // create default branch: master branch

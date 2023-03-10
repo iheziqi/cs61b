@@ -77,6 +77,18 @@ public class Index implements Serializable {
         writeIndex();
     }
 
+
+    /**
+     * Unstage the file if it is currently staged for addition.
+     * If the file is tracked in the current commit, stage it for removal,
+     * and remove the file from the working directory if the user has not already done so.
+     * Will not remove it unless it is tracked in the current commit.
+     * @param fileName
+     */
+    public void removeFile(String fileName) {
+
+    }
+
     /**
      * Reads in and deserializes the index from file.
      * @return Index object
@@ -110,7 +122,6 @@ public class Index implements Serializable {
     }
 
     public void print() {
-        System.out.println(this.stagingArea);
         System.out.println("Following is the content of staging area: ");
         System.out.println(Arrays.asList(this.stagingArea));
     }

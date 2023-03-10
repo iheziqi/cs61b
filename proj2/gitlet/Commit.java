@@ -43,6 +43,17 @@ public class Commit implements Serializable {
         this.timestamp = timestamp;
         this.message = message;
         this.index = Index.fromFile();
+        // By default, a commit hash the same file contents as its parent.
+        index.stagingArea.putAll(Commit.readCommit(hashOfParent).getIndex().stagingArea);
+
+    }
+
+    /** Constructor of initial commit. */
+    public Commit(String hashOfParent, String timestamp, String message, Boolean isInitialCommit) {
+        this.hashOfParent = hashOfParent;
+        this.timestamp = timestamp;
+        this.message = message;
+        this.index = Index.fromFile();
     }
 
     /**
