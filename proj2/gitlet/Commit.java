@@ -1,7 +1,5 @@
 package gitlet;
 
-import edu.princeton.cs.algs4.StdOut;
-
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;

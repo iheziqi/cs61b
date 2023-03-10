@@ -1,8 +1,5 @@
 package gitlet;
 
-
-import jh61b.junit.In;
-
 import java.io.File;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -20,33 +17,12 @@ import static gitlet.Utils.*;
  */
 public class Index implements Serializable {
     /** The data structure represents staging area. */
-    HashMap<String, IndexNode> stagingArea;
+    HashMap<String, String> stagingArea;
 
     /** Constructor of Index */
     public Index() {
         stagingArea = new HashMap<>();
         this.writeIndex();
-    }
-
-    /**
-     * Private helper class.
-     * This class represents Node in the index tree.
-     * */
-    private class IndexNode implements Serializable{
-        String blobPath;
-        String folderNameInObject;
-        String hashOfFile;
-
-        public IndexNode(String blobPath, String folderNameInObject) {
-            this.blobPath = blobPath;
-            this.folderNameInObject = folderNameInObject;
-            this.hashOfFile = blobPath + folderNameInObject;
-        }
-
-        @Override
-        public String toString() {
-           return "Hash of the file: " + blobPath + "/" + folderNameInObject;
-        }
     }
 
     /**
@@ -61,16 +37,14 @@ public class Index implements Serializable {
             return;
         }
 
-        // TODO: Consider here, how to deal with already-staged file and file changed, added and changed back.
         // If the file already-staged, overwrites the previous entry in staging area.
+        String hashOfFile = Repository.getHashOfFileContent(currentFile);
         String currentFilePath = currentFile.getPath();
         Index index = Index.fromFile();
-        if (index.stagingArea.get(currentFilePath) != null) {
-            IndexNode node = index.stagingArea.get(currentFilePath);
-            String hashOfBlob = node.hashOfFile;
-            // delete the blob
-            Repository.deleteBlob(hashOfBlob);
-            System.out.println("Deleted duplicated blob.");
+
+        if (hashOfFile.equals(index.stagingArea.get(currentFilePath))) {
+            System.out.println("You are adding the identical file to the staging area.");
+            return;
         }
 
         // If the current working version of the file is identical to
@@ -80,28 +54,24 @@ public class Index implements Serializable {
         // TODO: Here I hardcoded the branch name, change it in the future to dynamic.
         String hashOfLastCommit = Branch.getLastCommit("master");
         Commit lastCommit = Commit.readCommit(hashOfLastCommit);
-        if (
-                lastCommit != null
-                && lastCommit.getIndex().stagingArea.get(currentFilePath) != null
-                && index.stagingArea.get(currentFilePath) != null
-        ) {
-            IndexNode node = index.stagingArea.get(currentFilePath);
-            String hashOfBlob = node.hashOfFile;
-            Repository.deleteBlob(hashOfBlob);
-            System.out.println("Deleted duplicated blob.");
-        }
+
+        String hashOfFileInLastCommit = lastCommit.getIndex().stagingArea.get(currentFilePath);
+        if (hashOfFileInLastCommit != null && hashOfFileInLastCommit.equals(hashOfFile)) {
+            System.out.println("You are adding the identical file to the version in the current commit.");
+            // remove the identical blob in staging area.
+            index.stagingArea.remove(currentFilePath);
+            index.writeIndex();
+            return;
+        };
 
         // Get the hash value of the file.
         // The blob path is made up of the hash value of blob, and it is in the "object" directory.
         // The first two is directory name, the rest is file name.
-        String[] blobPath = Repository.setBlob(currentFile.getName());
-
-        // Use node to record which files have been added
-        IndexNode node = new IndexNode(blobPath[0], blobPath[1]);
+        Repository.setBlob(currentFile.getName());
 
         // The index has been created in gitlet initial,
         // so here every time we read from file and put new file into map.
-        this.stagingArea.put(currentFile.getPath(), node);
+        this.stagingArea.put(currentFile.getPath(), hashOfFile);
 
         // Serialize the index to store information.
         writeIndex();
@@ -128,36 +98,6 @@ public class Index implements Serializable {
     public void clearIndex() {
         this.stagingArea.clear();
         writeIndex();
-    }
-
-    /**
-     * Overrides the .equals() method.
-     * This method compares the staging area (hashmap) of two index,
-     * If both of them have the same contents, then it outputs true.
-     * @param obj
-     * @return
-     */
-    @Override
-    public boolean equals(Object obj) {
-       if (obj == null || !(obj instanceof Index)) {
-           return false;
-       }
-
-       Index other = (Index) obj;
-       if (this.stagingArea.size() != other.stagingArea.size()) {
-           return false;
-       }
-
-       for (String key : this.stagingArea.keySet()) {
-           IndexNode thisNode = this.stagingArea.get(key);
-           IndexNode otherNode = other.stagingArea.get(key);
-
-           if (otherNode == null || !thisNode.hashOfFile.equals(otherNode.hashOfFile)) {
-               return false;
-           }
-       }
-
-       return true;
     }
 
     /**

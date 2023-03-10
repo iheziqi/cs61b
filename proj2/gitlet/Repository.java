@@ -79,6 +79,16 @@ public class Repository {
     }
 
     /**
+     * Calculates the hash value of the file contents.
+     * @param file
+     * @return hash
+     */
+    public static String getHashOfFileContent(File file) {
+        byte[] blobContent = readContents(file);
+        return sha1(blobContent);
+    }
+
+    /**
      * Names the blob in correct way and puts it into the correct directory.
      * Inside the .gitlet/objects directory, the directory names are made by first two characters
      * of hash value of file contents(byte array). The rest of the hash is used as the name of the blob file.
@@ -86,21 +96,21 @@ public class Repository {
      * @return a string array including the path of blob,
      * the first element is the folder name(first two hash), the second is the file name (rest of hash).
      */
-    public static String[] setBlob(String fileName) {
+    public static void setBlob(String fileName) {
         File f = join(CWD, fileName);
         if (!f.exists()) {
             message("File does not exist.");
             System.exit(0);
         }
 
-        // Use byte array of file as blobContent
+        // Use byte array of file as blobContent.
         byte[] blobContent = readContents(f);
 
-        // Calculate the hash of byte array
-        String hash = sha1(blobContent);
+        // Calculate the hash of byte array.
+        String hash = getHashOfFileContent(f);
 
-        // First two characters as directory name
-        // Rest of hash as file name
+        // First two characters as directory name.
+        // Rest of hash as file name.
         String[] blobPath = getBlobPath(hash);
         String firstTwoHash = blobPath[0];
         String restOfHash = blobPath[1];
@@ -116,8 +126,6 @@ public class Repository {
         File blob = join(objectDirectory, restOfHash);
         // Write the content into blob
         writeContents(blob, blobContent);
-
-        return blobPath;
     }
 
     public static void getBlobFromFile(String hashOfFile) {
