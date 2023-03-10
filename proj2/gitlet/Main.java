@@ -51,6 +51,13 @@ public class Main {
                 );
                 thisCommit.writeCommit();
                 break;
+            case "rm":
+                if (args.length < 2) {
+                    message("Incorrect operands.");
+                    System.exit(0);
+                }
+                Index.fromFile().removeFile(args[1]);
+                break;
             case "cat-index":
                 Index.printIndex();
                 break;

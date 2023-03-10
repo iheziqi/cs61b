@@ -2,8 +2,10 @@ package gitlet;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import static gitlet.Utils.*;
 
@@ -19,9 +21,13 @@ public class Index implements Serializable {
     /** The data structure represents staging area. */
     HashMap<String, String> stagingArea;
 
+    /** The data structure represents removal area. */
+    List<String> removalArea;
+
     /** Constructor of Index */
     public Index() {
         stagingArea = new HashMap<>();
+        removalArea = new ArrayList<>();
         this.writeIndex();
     }
 
@@ -37,12 +43,11 @@ public class Index implements Serializable {
             return;
         }
 
-        // If the file already-staged, overwrites the previous entry in staging area.
         String hashOfFile = Repository.getHashOfFileContent(currentFile);
         String currentFilePath = currentFile.getPath();
-        Index index = Index.fromFile();
 
-        if (hashOfFile.equals(index.stagingArea.get(currentFilePath))) {
+        // If the file is identical to already-staged file, return.
+        if (hashOfFile.equals(this.stagingArea.get(currentFilePath))) {
             System.out.println("You are adding the identical file to the staging area.");
             return;
         }
@@ -59,10 +64,18 @@ public class Index implements Serializable {
         if (hashOfFileInLastCommit != null && hashOfFileInLastCommit.equals(hashOfFile)) {
             System.out.println("You are adding the identical file to the version in the current commit.");
             // remove the identical blob in staging area.
-            index.stagingArea.remove(currentFilePath);
-            index.writeIndex();
+            this.stagingArea.remove(currentFilePath);
+            this.writeIndex();
             return;
         };
+
+        // If the file already-staged, and the contents are different,
+        // overwrites the previous entry in staging area,
+        // deletes the old blob in objects folder.
+        if (this.stagingArea.containsKey(currentFilePath)) {
+            String oldHash = this.stagingArea.get(currentFilePath);
+            Repository.deleteBlob(oldHash);
+        }
 
         // Get the hash value of the file.
         // The blob path is made up of the hash value of blob, and it is in the "object" directory.
@@ -86,6 +99,33 @@ public class Index implements Serializable {
      * @param fileName
      */
     public void removeFile(String fileName) {
+        File currentFile = join(Repository.CWD, fileName);
+        // If the file doesn't exist.
+        if (currentFile == null) {
+            message("No reason to remove the file.");
+            return;
+        }
+
+        String currentFilePath = currentFile.getPath();
+        if (!this.stagingArea.containsKey(currentFilePath)) {
+            message("No reason to remove the file.");
+            return;
+        }
+
+        this.removalArea.add(currentFilePath);
+
+        // Un-stage the file if it is currently staged for addition.
+        Repository.deleteBlob(this.stagingArea.get(currentFilePath));
+        this.stagingArea.remove(currentFilePath);
+        this.writeIndex();
+
+        // If the file is tracked in the current commit,
+        // remove the file if the user has not already done so.
+        // TODO: change the branch name to dynamic in the future.
+        Commit lastCommit = Commit.readCommit(Branch.getLastCommit("master"));
+        if (lastCommit != null && lastCommit.getIndex().stagingArea.get(currentFilePath) != null) {
+            restrictedDelete(currentFile);
+        }
 
     }
 
@@ -109,6 +149,7 @@ public class Index implements Serializable {
      */
     public void clearIndex() {
         this.stagingArea.clear();
+        this.removalArea.clear();
         writeIndex();
     }
 
@@ -116,13 +157,23 @@ public class Index implements Serializable {
      * Prints the staging area.
      */
     public static void printIndex(){
-        System.out.println(Index.fromFile());
+        Index index = Index.fromFile();
         System.out.println("Following is the content of staging area: ");
-        System.out.println(Arrays.asList(Index.fromFile().stagingArea));
+        System.out.println(Arrays.asList(index.stagingArea));
+        System.out.println("Following is the content of removal area: ");
+        for (String element : index.removalArea) {
+            System.out.print(element + " ");
+        }
+        System.out.println();
     }
 
     public void print() {
         System.out.println("Following is the content of staging area: ");
         System.out.println(Arrays.asList(this.stagingArea));
+        System.out.println("Following is the content of removal area: ");
+        for (String element : this.removalArea) {
+            System.out.print(element + " ");
+        }
+        System.out.println();
     }
 }
