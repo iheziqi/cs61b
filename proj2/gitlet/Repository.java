@@ -1,7 +1,6 @@
 package gitlet;
 
 import java.io.File;
-import java.io.IOException;
 
 import static gitlet.Utils.*;
 
@@ -151,5 +150,15 @@ public class Repository {
         String restHash = hash.substring(2, UID_LENGTH);
         String[] blobPath = new String[]{firstTwoHash, restHash};
         return blobPath;
+    }
+
+    /**
+     * Takes a full file path as input and returns the file name.
+     * @param filePath
+     * @return
+     */
+    public static String getFileNameFromPath(String filePath) {
+        File file = new File(filePath);
+        return file.getName();
     }
 }
