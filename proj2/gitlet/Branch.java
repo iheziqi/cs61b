@@ -1,5 +1,7 @@
 package gitlet;
 
+import java.io.File;
+
 import static gitlet.Utils.*;
 
 /**
@@ -16,6 +18,39 @@ public class Branch {
         // the name of default branch is master
         // the content in branch file is the hash value of a commit
         writeContents(join(Repository.BRANCHES, "master"), commitID);
+    }
+
+    /**
+     * Creates a new branch with the given name, and points it at the current head commit.
+     * @param branchName
+     * @param commitID
+     */
+    public static void createNewBranch(String branchName, String commitID) {
+        File branch = join(Repository.BRANCHES, branchName);
+        if (branch.exists()) {
+            message("A branch with that name already exists");
+            return;
+        }
+        writeContents(join(Repository.BRANCHES, branchName), commitID);
+    }
+
+    /**
+     * Deletes the branch with the given name.
+     * Only delete the pointer associated with the branch.
+     * @param branchName
+     */
+    public static void removeBranch(String branchName) {
+        File branchToRemove = join(Repository.BRANCHES, branchName);
+        if (!branchToRemove.exists()) {
+            message("A branch with that name does not exist.");
+            return;
+        }
+        if (branchName.equals(getCurrentBranch())) {
+            message("Cannot remove the current branch.");
+            return;
+        }
+
+        branchToRemove.delete();
     }
 
     /**
@@ -36,7 +71,11 @@ public class Branch {
         return readContentsAsString(join(Repository.BRANCHES, branchName));
     }
 
-    public static void createNewBranch(String commitID) {
-
+    /**
+     * Gets the current branch name.
+     * @return the branch name
+     */
+    public static String getCurrentBranch() {
+        return readContentsAsString(Repository.HEAD);
     }
 }

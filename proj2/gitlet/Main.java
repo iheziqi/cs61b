@@ -45,9 +45,8 @@ public class Main {
                     message("No changes added to the commit");
                     System.exit(0);
                 }
-                // TODO: change the branch name to user's demand, here I hardcoded master branch.
                 Commit thisCommit = new Commit(
-                        Branch.getLastCommit("master"), Commit.getFormattedDate(), args[1]
+                        Branch.getLastCommit(Branch.getCurrentBranch()), Commit.getFormattedDate(), args[1]
                 );
                 thisCommit.writeCommit();
                 break;
@@ -57,6 +56,20 @@ public class Main {
                     System.exit(0);
                 }
                 Index.fromFile().removeFile(args[1]);
+                break;
+            case "branch":
+                if (args.length < 2) {
+                    message("Incorrect operands.");
+                    System.exit(0);
+                }
+                Branch.createNewBranch(args[1], Branch.getLastCommit(Branch.getCurrentBranch()));
+                break;
+            case "rm-branch":
+                if (args.length < 2) {
+                    message("Incorrect operands.");
+                    System.exit(0);
+                }
+                Branch.removeBranch(args[1]);
                 break;
             case "cat-index":
                 Index.printIndex();

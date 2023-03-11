@@ -56,8 +56,7 @@ public class Index implements Serializable {
         // the version in the current commit, will not stage it to be added,
         // and remove it from the staging area if it is already there.
         // (as can happen when a file is changed, added, and the changed back to it's original)
-        // TODO: Here I hardcoded the branch name, change it in the future to dynamic.
-        String hashOfLastCommit = Branch.getLastCommit("master");
+        String hashOfLastCommit = Branch.getLastCommit(Branch.getCurrentBranch());
         Commit lastCommit = Commit.readCommit(hashOfLastCommit);
 
         String hashOfFileInLastCommit = lastCommit.getIndex().stagingArea.get(currentFilePath);
@@ -121,8 +120,7 @@ public class Index implements Serializable {
 
         // If the file is tracked in the current commit,
         // remove the file if the user has not already done so.
-        // TODO: change the branch name to dynamic in the future.
-        Commit lastCommit = Commit.readCommit(Branch.getLastCommit("master"));
+        Commit lastCommit = Commit.readCommit(Branch.getLastCommit(Branch.getCurrentBranch()));
         if (lastCommit != null && lastCommit.getIndex().stagingArea.get(currentFilePath) != null) {
             restrictedDelete(currentFile);
         }

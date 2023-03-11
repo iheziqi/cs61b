@@ -110,8 +110,7 @@ public class Commit implements Serializable {
         writeObject(commitContent, this);
 
         // Update branch pointer pointing to this commit
-        // TODO: change the branch name to user's specific in the future.
-        Branch.updateBranchPointer("master", hashOfCommit);
+        Branch.updateBranchPointer(Branch.getCurrentBranch(), hashOfCommit);
 
         // The staging area is cleared after a commit.
         Index.fromFile().clearIndex();

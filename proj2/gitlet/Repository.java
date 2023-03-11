@@ -60,6 +60,9 @@ public class Repository {
         // create index(staging area)
         new Index();
 
+        // create head pointer pointing to default branch master
+        writeContents(HEAD, "master");
+
         // create initial commit
         // the time of initial commit is Unix epoch time
         Commit initalCommit = new Commit(
@@ -74,9 +77,6 @@ public class Repository {
         Branch.createDefaultBranch(initalCommit.getHash());
 
         initalCommit.writeCommit();
-
-        // create head pointer pointing to default branch master
-        writeContents(HEAD, "master");
     }
 
     /**
@@ -129,10 +129,6 @@ public class Repository {
         writeContents(blob, blobContent);
     }
 
-    public static void getBlobFromFile(String hashOfFile) {
-
-    }
-
     /**
      * Deletes the blob of given file.
      * @param hashOfFile
@@ -155,14 +151,5 @@ public class Repository {
         String restHash = hash.substring(2, UID_LENGTH);
         String[] blobPath = new String[]{firstTwoHash, restHash};
         return blobPath;
-    }
-
-    /**
-     * Serializes the commit to file.
-     * @return
-     */
-    public String[] setCommitBlob() {
-        // TODO: Serialize the commit and store it to object folder.
-        return null;
     }
 }
