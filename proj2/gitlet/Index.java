@@ -44,10 +44,10 @@ public class Index implements Serializable {
         }
 
         String hashOfFile = Repository.getHashOfFileContent(currentFile);
-        String currentFilePath = currentFile.getPath();
+//        String currentFilePath = currentFile.getPath();
 
         // If the file is identical to already-staged file, return.
-        if (hashOfFile.equals(this.stagingArea.get(currentFilePath))) {
+        if (hashOfFile.equals(this.stagingArea.get(fileName))) {
             System.out.println("You are adding the identical file to the staging area.");
             return;
         }
@@ -59,11 +59,11 @@ public class Index implements Serializable {
         String hashOfLastCommit = Branch.getLastCommit(Branch.getCurrentBranch());
         Commit lastCommit = Commit.readCommit(hashOfLastCommit);
 
-        String hashOfFileInLastCommit = lastCommit.getIndex().stagingArea.get(currentFilePath);
+        String hashOfFileInLastCommit = lastCommit.getIndex().stagingArea.get(fileName);
         if (hashOfFileInLastCommit != null && hashOfFileInLastCommit.equals(hashOfFile)) {
             System.out.println("You are adding the identical file to the version in the current commit.");
             // remove the identical blob in staging area.
-            this.stagingArea.remove(currentFilePath);
+            this.stagingArea.remove(fileName);
             this.writeIndex();
             return;
         };
@@ -71,19 +71,19 @@ public class Index implements Serializable {
         // If the file already-staged, and the contents are different,
         // overwrites the previous entry in staging area,
         // deletes the old blob in objects folder.
-        if (this.stagingArea.containsKey(currentFilePath)) {
-            String oldHash = this.stagingArea.get(currentFilePath);
+        if (this.stagingArea.containsKey(fileName)) {
+            String oldHash = this.stagingArea.get(fileName);
             Repository.deleteBlob(oldHash);
         }
 
         // Get the hash value of the file.
         // The blob path is made up of the hash value of blob, and it is in the "object" directory.
         // The first two is directory name, the rest is file name.
-        Repository.setBlob(currentFile.getName());
+        Repository.setBlob(fileName);
 
         // The index has been created in gitlet initial,
         // so here every time we read from file and put new file into map.
-        this.stagingArea.put(currentFile.getPath(), hashOfFile);
+        this.stagingArea.put(fileName, hashOfFile);
 
         // Serialize the index to store information.
         writeIndex();
@@ -105,23 +105,23 @@ public class Index implements Serializable {
             return;
         }
 
-        String currentFilePath = currentFile.getPath();
-        if (!this.stagingArea.containsKey(currentFilePath)) {
+//        String currentFilePath = currentFile.getPath();
+        if (!this.stagingArea.containsKey(fileName)) {
             message("No reason to remove the file.");
             return;
         }
 
-        this.removalArea.add(currentFilePath);
+        this.removalArea.add(fileName);
 
         // Un-stage the file if it is currently staged for addition.
-        Repository.deleteBlob(this.stagingArea.get(currentFilePath));
-        this.stagingArea.remove(currentFilePath);
+        Repository.deleteBlob(this.stagingArea.get(fileName));
+        this.stagingArea.remove(fileName);
         this.writeIndex();
 
         // If the file is tracked in the current commit,
         // remove the file if the user has not already done so.
         Commit lastCommit = Commit.readCommit(Branch.getLastCommit(Branch.getCurrentBranch()));
-        if (lastCommit != null && lastCommit.getIndex().stagingArea.get(currentFilePath) != null) {
+        if (lastCommit != null && lastCommit.getIndex().stagingArea.get(fileName) != null) {
             restrictedDelete(currentFile);
         }
 
