@@ -104,24 +104,28 @@ public class Index implements Serializable {
             return;
         }
 
-        if (!this.stagingArea.containsKey(fileName)) {
+        Commit currentCommit = Commit.readCommit(Branch.getLastCommit(Branch.getCurrentBranch()));
+        if (
+                !currentCommit.getIndex().stagingArea.containsKey(fileName)
+                && !this.stagingArea.containsKey(fileName)
+        ) {
             message("No reason to remove the file.");
             return;
         }
 
         // Un-stage the file if it is currently staged for addition.
-        Repository.deleteBlob(this.stagingArea.get(fileName));
-        this.stagingArea.remove(fileName);
-        this.writeIndex();
+        if (this.stagingArea.containsKey(fileName)) {
+            Repository.deleteBlob(this.stagingArea.get(fileName));
+            this.stagingArea.remove(fileName);
+            this.writeIndex();
+        }
 
         // If the file is tracked in the current commit,
         // remove the file if the user has not already done so.
-        Commit lastCommit = Commit.readCommit(Branch.getLastCommit(Branch.getCurrentBranch()));
-        if (lastCommit != null && lastCommit.getIndex().stagingArea.get(fileName) != null) {
+        if (currentCommit.getIndex().stagingArea.containsKey(fileName)) {
             this.removalArea.add(fileName);
             restrictedDelete(currentFile);
         }
-
     }
 
     /**

@@ -114,7 +114,7 @@ public class Branch {
         for (String file : files) {
             if (
                     !indexCurrentCommit.stagingArea.containsKey(file)
-                    && indexCheckoutTo.stagingArea.containsKey(file)
+                    // && indexCheckoutTo.stagingArea.containsKey(file)
             ) {
                 System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
                 return;
