@@ -57,6 +57,9 @@ public class Main {
                 }
                 Index.fromFile().removeFile(args[1]);
                 break;
+            case "status":
+                new Status();
+                break;
             case "branch":
                 if (args.length < 2) {
                     message("Incorrect operands.");
