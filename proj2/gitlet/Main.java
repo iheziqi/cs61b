@@ -66,14 +66,13 @@ public class Main {
                     System.exit(0);
                 }
                 if (args.length == 2) {
-                    // TODO: checkout [branch name]
                     Branch.checkoutBranch(args[1]);
                 }
                 if (args.length == 3) {
-                    // TODO: checkout -- [file name]
+                    Commit.checkoutFile(args[2]);
                 }
                 if (args.length == 4) {
-                    // TODO: checkout [commit id] -- [file name]
+                    Commit.checkoutFile(args[1], args[3]);
                 }
                 break;
             case "branch":

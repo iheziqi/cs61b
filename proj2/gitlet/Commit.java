@@ -117,6 +117,45 @@ public class Commit implements Serializable {
     }
 
     /**
+     * Takes the version of the file as it exists in the head commit
+     * and puts it in the working directory, overwriting the version of the file
+     * that's already there if there is one.
+     * The new version of the file is not staged.
+     * @param fileName
+     */
+    public static void checkoutFile(String fileName) {
+        Commit currentCommit = Commit.readCommit(Branch.getLastCommit(Branch.getCurrentBranch()));
+        if (!currentCommit.getIndex().stagingArea.containsKey(fileName)) {
+            message("File does not exist in that commit.");
+            return;
+        }
+        String hashOfFileInCurrentCommit = currentCommit.getIndex().stagingArea.get(fileName);
+        String[] blobPath = Repository.getBlobPath(hashOfFileInCurrentCommit);
+        File blobOfFileInCurrentCommit = join(Repository.OBJECTS, blobPath[0], blobPath[1]);
+        writeContents(join(Repository.CWD, fileName), readContents(blobOfFileInCurrentCommit));
+    }
+
+    /**
+     * Takes the version of the file as it exists in teh commit with the given id,
+     * and puts it in the working directory, overwriting the version of the file that's
+     * already there if there is one.
+     * The new version of the file is not staged.
+     * @param commitID
+     * @param fileName
+     */
+    public static void checkoutFile(String commitID, String fileName) {
+        Commit targeCommit = Commit.readCommit(commitID);
+        if (targeCommit == null) {
+            message("No commit with that id exists.");
+            return;
+        }
+        String hashOfFileInTargetCommit = targeCommit.getIndex().stagingArea.get(fileName);
+        String[] blobPath = Repository.getBlobPath(hashOfFileInTargetCommit);
+        File blobOfFileInTargetCommit = join(Repository.OBJECTS, blobPath[0], blobPath[1]);
+        writeContents(join(Repository.CWD, fileName), readContents(blobOfFileInTargetCommit));
+    }
+
+    /**
      * Equal method of commit object.
      * @param commit
      * @return
