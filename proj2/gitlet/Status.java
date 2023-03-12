@@ -21,7 +21,7 @@ public class Status {
         System.out.println("=== Modifications Not Staged For Commit ===");
         modificationNotStagedForCommit();
         System.out.println("=== Untracked Files ===");
-        printStagedFiles();
+        printUntrackedFiles();
     }
 
     /**

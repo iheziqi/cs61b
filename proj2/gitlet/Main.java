@@ -60,6 +60,22 @@ public class Main {
             case "status":
                 new Status();
                 break;
+            case "checkout":
+                if (args.length < 2) {
+                    message("Incorrect operands.");
+                    System.exit(0);
+                }
+                if (args.length == 2) {
+                    // TODO: checkout [branch name]
+                    Branch.checkoutBranch(args[1]);
+                }
+                if (args.length == 3) {
+                    // TODO: checkout -- [file name]
+                }
+                if (args.length == 4) {
+                    // TODO: checkout [commit id] -- [file name]
+                }
+                break;
             case "branch":
                 if (args.length < 2) {
                     message("Incorrect operands.");

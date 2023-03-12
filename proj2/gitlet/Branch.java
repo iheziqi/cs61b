@@ -1,6 +1,10 @@
 package gitlet;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import static gitlet.Utils.*;
 
@@ -77,5 +81,66 @@ public class Branch {
      */
     public static String getCurrentBranch() {
         return readContentsAsString(Repository.HEAD);
+    }
+
+    /**
+     * Switches branches.
+     * @param branchName
+     */
+    public static void checkoutBranch(String branchName) {
+        File currentBranch = join(Repository.BRANCHES, Branch.getCurrentBranch());
+        File branchCheckoutTo = join(Repository.BRANCHES, branchName);
+
+        // If no branch with that name exists.
+        if (!currentBranch.exists()) {
+            System.out.println("No such branch exists.");
+            return;
+        }
+
+        // If that branch is the current branch.
+        if (branchName.equals(getCurrentBranch())) {
+            System.out.println("No need to checkout the current branch.");
+            return;
+        }
+
+        Commit currentCommit = Commit.readCommit(readContentsAsString(currentBranch));
+        Commit commitCheckoutTo = Commit.readCommit(readContentsAsString(branchCheckoutTo));
+        Index stagingArea = Index.fromFile();
+        Index indexCheckoutTo = commitCheckoutTo.getIndex();
+        Index indexCurrentCommit = currentCommit.getIndex();
+
+        // If a working file is untracked in the current branch and would be overwritten by the checkout.
+        List<String> files = plainFilenamesIn(Repository.CWD);
+        for (String file : files) {
+            if (
+                    !indexCurrentCommit.stagingArea.containsKey(file)
+                    && indexCheckoutTo.stagingArea.containsKey(file)
+            ) {
+                System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+                return;
+            }
+        }
+
+        // Remove all files.
+        // All the files that are tacked in the current branch
+        // but are not present in the check-out branch are deleted.
+        for (String file : files) {
+            restrictedDelete(join(Repository.CWD, file));
+        }
+
+        // Takes all files in the head commit of the given branch, and puts them in the working directory.
+        // Overrides the versions of the files that are already there if they exist.
+        for (Map.Entry<String, String> entry : indexCheckoutTo.stagingArea.entrySet()) {
+            String fileName = entry.getKey();
+            String hashOfFile = entry.getValue();
+            String[] blobPath = Repository.getBlobPath(hashOfFile);
+            writeContents(join(Repository.CWD, fileName), readContents(join(Repository.OBJECTS, blobPath[0], blobPath[1])));
+        }
+        // The staging area is cleared.
+        stagingArea.clearIndex();
+        stagingArea.writeIndex();
+
+        // the given branch is now considered the current branch (HEAD)
+        writeContents(Repository.HEAD, branchName);
     }
 }
