@@ -44,7 +44,6 @@ public class Index implements Serializable {
         }
 
         String hashOfFile = Repository.getHashOfFileContent(currentFile);
-//        String currentFilePath = currentFile.getPath();
 
         // If the file is identical to already-staged file, return.
         if (hashOfFile.equals(this.stagingArea.get(fileName))) {
@@ -105,13 +104,10 @@ public class Index implements Serializable {
             return;
         }
 
-//        String currentFilePath = currentFile.getPath();
         if (!this.stagingArea.containsKey(fileName)) {
             message("No reason to remove the file.");
             return;
         }
-
-        this.removalArea.add(fileName);
 
         // Un-stage the file if it is currently staged for addition.
         Repository.deleteBlob(this.stagingArea.get(fileName));
@@ -122,6 +118,7 @@ public class Index implements Serializable {
         // remove the file if the user has not already done so.
         Commit lastCommit = Commit.readCommit(Branch.getLastCommit(Branch.getCurrentBranch()));
         if (lastCommit != null && lastCommit.getIndex().stagingArea.get(fileName) != null) {
+            this.removalArea.add(fileName);
             restrictedDelete(currentFile);
         }
 
